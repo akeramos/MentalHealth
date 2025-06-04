@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Borang Saringan Kesihatan Mental (GAD-7 & PHQ-9)</title>
   <style>
     body {
@@ -10,185 +10,222 @@
       margin: 1em;
       padding: 1em;
       max-width: 600px;
-      margin: auto;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #eaf4fc; /* soft sky blue */
+      color: #123456; /* calm navy text */
     }
-    h2 {
-      background-color: #f0f0f0;
+
+    .form-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 50, 0.1);
+    }
+
+    h2,
+    h3 {
+      background-color: #d0e7f9; /* light blue highlight */
       padding: 10px;
       border-radius: 8px;
+      color: #0b3d91;
+      margin-top: 1.5em;
     }
-    label, select {
+
+    label {
       display: block;
       margin-top: 10px;
+      color: #123456;
     }
+
+    input,
     select {
       width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+      border-radius: 5px;
+      border: 1px solid #a3c5e0;
+      background-color: #f7fbfe;
+      color: #123456;
+    }
+
+    select {
       padding: 5px;
     }
+
     .question {
       margin-bottom: 15px;
     }
-    .score-box {
-      margin-top: 20px;
-      padding: 15px;
-      background: #eafaea;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-    }
+
     button {
+      display: block;
+      width: 100%;
       margin-top: 20px;
       padding: 10px 20px;
       font-size: 16px;
       border: none;
-      background-color: #4CAF50;
+      background-color: #0b72b9;
       color: white;
       border-radius: 6px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
+
     button:hover {
-      background-color: #45a049;
+      background-color: #095a94;
+    }
+
+    textarea {
+      margin-top: 15px;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #a3c5e0;
+      padding: 10px;
+      font-family: monospace;
+      color: #123456;
+      resize: vertical;
     }
   </style>
 </head>
 <body>
+  <h2>Borang Saringan GAD-7 & PHQ-9</h2>
 
-<h2>Borang Saringan GAD-7 & PHQ-9</h2>
+  <div class="form-container">
+    <form id="mentalHealthForm">
+      <label>
+        Nama Pesakit:
+        <input type="text" id="nama" required />
+      </label>
+      <label>
+        No. NRIC:
+        <input type="text" id="nric" required />
+      </label>
 
-<form id="mentalHealthForm">
-  <label>Nama Pesakit:
-    <input type="text" id="nama" required>
-  </label>
-  <label>No. NRIC:
-    <input type="text" id="nric" required>
-  </label>
+      <h3>GAD-7: Skala Gangguan Kebimbangan Umum</h3>
+      <div id="gad7-questions"></div>
 
-  <h3>GAD-7: Skala Gangguan Kebimbangan Umum</h3>
-  <div id="gad7-questions"></div>
+      <h3>PHQ-9: Soal Selidik Kesihatan Pesakit</h3>
+      <div id="phq9-questions"></div>
 
-  <h3>PHQ-9: Soal Selidik Kesihatan Pesakit</h3>
-  <div id="phq9-questions"></div>
+      <button type="button" onclick="copySummary()">Papar ringkasan</button>
 
-  <div class="score-box" id="resultBox">
-    <strong>Jumlah Skor:</strong><br>
-    GAD-7: <span id="gadScore">0</span> - <span id="gadLevel"></span><br>
-    PHQ-9: <span id="phqScore">0</span> - <span id="phqLevel"></span><br>
-    <div id="recommendation"></div>
+      <textarea
+        id="summaryBox"
+        rows="8"
+        placeholder="Ringkasan akan dipaparkan di sini..."
+        readonly
+      ></textarea>
+    </form>
   </div>
 
-  <button type="button" onclick="calculateScore()">Kira Skor</button>
-  <button type="button" onclick="copySummary()">Salin Ringkasan</button>
-</form>
+  <script>
+    const gad7Questions = [
+      "Berasa gugup, cemas atau 'berdebar-debar'?",
+      "Tidak dapat berhenti atau mengawal rasa risau?",
+      "Risau terlalu banyak mengenai pelbagai perkara?",
+      "Kesukaran untuk berehat?",
+      "Berasa gelisah sehingga sukar untuk duduk diam?",
+      "Mudah rasa terganggu atau cepat marah?",
+      "Berasa seolah-olah sesuatu yang buruk akan berlaku?",
+    ];
 
-<script>
-const gad7Questions = [
-  "Berasa gugup, cemas atau 'berdebar-debar'?",
-  "Tidak dapat berhenti atau mengawal rasa risau?",
-  "Risau terlalu banyak mengenai pelbagai perkara?",
-  "Kesukaran untuk berehat?",
-  "Berasa gelisah sehingga sukar untuk duduk diam?",
-  "Mudah rasa terganggu atau cepat marah?",
-  "Berasa seolah-olah sesuatu yang buruk akan berlaku?"
-];
+    const phq9Questions = [
+      "Kurang minat atau keseronokan dalam melakukan sesuatu?",
+      "Berasa murung, sedih, atau putus harapan?",
+      "Kesukaran untuk tidur atau tidur berlebihan?",
+      "Berasa letih atau kurang tenaga?",
+      "Selera makan yang kurang atau berlebihan?",
+      "Merasa diri gagal atau kecewa terhadap diri sendiri?",
+      "Kesukaran untuk menumpukan perhatian?",
+      "Bergerak atau bercakap lebih perlahan daripada biasa atau terlalu gelisah?",
+      "Terfikir lebih baik mati atau mencederakan diri?",
+    ];
 
-const phq9Questions = [
-  "Kurang minat atau keseronokan dalam melakukan sesuatu?",
-  "Berasa murung, sedih, atau putus harapan?",
-  "Kesukaran untuk tidur atau tidur berlebihan?",
-  "Berasa letih atau kurang tenaga?",
-  "Selera makan yang kurang atau berlebihan?",
-  "Merasa diri gagal atau kecewa terhadap diri sendiri?",
-  "Kesukaran untuk menumpukan perhatian?",
-  "Bergerak atau bercakap lebih perlahan daripada biasa atau terlalu gelisah?",
-  "Terfikir lebih baik mati atau mencederakan diri?"
-];
+    const responses = [
+      { text: "Tidak pernah", value: 0 },
+      { text: "Beberapa hari", value: 1 },
+      { text: "Lebih separuh hari", value: 2 },
+      { text: "Hampir setiap hari", value: 3 },
+    ];
 
-const responses = [
-  { text: "Tidak pernah", value: 0 },
-  { text: "Beberapa hari", value: 1 },
-  { text: "Lebih separuh hari", value: 2 },
-  { text: "Hampir setiap hari", value: 3 }
-];
+    function generateQuestions(containerId, questions, prefix) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      questions.forEach((q, i) => {
+        const div = document.createElement("div");
+        div.className = "question";
+        div.innerHTML =
+          `<label>${i + 1}. ${q}</label><select id="${prefix}${i}">` +
+          responses
+            .map((r) => `<option value="${r.value}">${r.text}</option>`)
+            .join("") +
+          `</select>`;
+        container.appendChild(div);
+      });
+    }
 
-function generateQuestions(containerId, questions, prefix) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = "";
-  questions.forEach((q, i) => {
-    const div = document.createElement('div');
-    div.className = "question";
-    div.innerHTML = `<label>${i+1}. ${q}</label><select id="${prefix}${i}">` +
-      responses.map(r => `<option value="${r.value}">${r.text}</option>`).join('') +
-      `</select>`;
-    container.appendChild(div);
-  });
-}
+    generateQuestions("gad7-questions", gad7Questions, "gad");
+    generateQuestions("phq9-questions", phq9Questions, "phq");
 
-generateQuestions("gad7-questions", gad7Questions, "gad");
-generateQuestions("phq9-questions", phq9Questions, "phq");
+    function interpretGAD(score) {
+      if (score <= 4) return "Tiada atau ringan";
+      if (score <= 9) return "Kebimbangan sederhana";
+      if (score <= 14) return "Kebimbangan sederhana berat";
+      return "Kebimbangan berat";
+    }
 
-function calculateScore() {
-  let gadScore = 0, phqScore = 0;
-  for (let i = 0; i < gad7Questions.length; i++) {
-    gadScore += parseInt(document.getElementById(`gad${i}`).value);
-  }
-  for (let i = 0; i < phq9Questions.length; i++) {
-    phqScore += parseInt(document.getElementById(`phq${i}`).value);
-  }
+    function interpretPHQ(score) {
+      if (score <= 4) return "Tiada atau ringan";
+      if (score <= 9) return "Kemurungan ringan";
+      if (score <= 14) return "Kemurungan sederhana";
+      if (score <= 19) return "Kemurungan sederhana berat";
+      return "Kemurungan berat";
+    }
 
-  document.getElementById("gadScore").textContent = gadScore;
-  document.getElementById("phqScore").textContent = phqScore;
-  document.getElementById("gadLevel").textContent = interpretGAD(gadScore);
-  document.getElementById("phqLevel").textContent = interpretPHQ(phqScore);
+    function getRecommendation(gad, phq) {
+      if (gad >= 10 || phq >= 10) {
+        return "Pertimbangkan rujukan kepada profesional kesihatan mental.";
+      }
+      return "Teruskan pemantauan dan sokongan kendiri.";
+    }
 
-  const rec = getRecommendation(gadScore, phqScore);
-  document.getElementById("recommendation").innerHTML = `<strong>Cadangan:</strong> ${rec}`;
-}
+    function copySummary() {
+      const nama = document.getElementById("nama").value.trim();
+      const nric = document.getElementById("nric").value.trim();
 
-function interpretGAD(score) {
-  if (score <= 4) return "Tiada atau ringan";
-  if (score <= 9) return "Kebimbangan sederhana";
-  if (score <= 14) return "Kebimbangan sederhana berat";
-  return "Kebimbangan berat";
-}
+      if (!nama || !nric) {
+        alert("Sila isi Nama Pesakit dan No. NRIC terlebih dahulu.");
+        return;
+      }
 
-function interpretPHQ(score) {
-  if (score <= 4) return "Tiada atau ringan";
-  if (score <= 9) return "Kemurungan ringan";
-  if (score <= 14) return "Kemurungan sederhana";
-  if (score <= 19) return "Kemurungan sederhana berat";
-  return "Kemurungan berat";
-}
+      let gadScore = 0,
+        phqScore = 0;
+      for (let i = 0; i < gad7Questions.length; i++) {
+        gadScore += parseInt(document.getElementById(`gad${i}`).value);
+      }
+      for (let i = 0; i < phq9Questions.length; i++) {
+        phqScore += parseInt(document.getElementById(`phq${i}`).value);
+      }
 
-function getRecommendation(gad, phq) {
-  if (gad >= 10 || phq >= 10) {
-    return "Pertimbangkan rujukan kepada profesional kesihatan mental.";
-  }
-  return "Teruskan pemantauan dan sokongan kendiri.";
-}
+      const gadLevel = interpretGAD(gadScore);
+      const phqLevel = interpretPHQ(phqScore);
+      const rec = getRecommendation(gadScore, phqScore);
 
-function copySummary() {
-  const nama = document.getElementById("nama").value;
-  const nric = document.getElementById("nric").value;
-  const gad = document.getElementById("gadScore").textContent;
-  const phq = document.getElementById("phqScore").textContent;
-  const gadLevel = document.getElementById("gadLevel").textContent;
-  const phqLevel = document.getElementById("phqLevel").textContent;
-  const rec = document.getElementById("recommendation").textContent;
-
-  const summary = `
+      const summary = `
 Nama: ${nama}
 NRIC: ${nric}
 
-GAD-7 Skor: ${gad} - ${gadLevel}
-PHQ-9 Skor: ${phq} - ${phqLevel}
+GAD-7 Skor: ${gadScore} - ${gadLevel}
+PHQ-9 Skor: ${phqScore} - ${phqLevel}
 
+Cadangan:
 ${rec}
-  `.trim();
+      `.trim();
 
-  navigator.clipboard.writeText(summary).then(() => {
-    alert("Ringkasan telah disalin ke papan klip.");
-  });
-}
-</script>
-
+      document.getElementById("summaryBox").value = summary;
+    }
+  </script>
 </body>
 </html>
