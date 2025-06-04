@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Borang Saringan Kesihatan Mental (GAD-7 & PHQ-9)</title>
+  <title>Saringan Kesihatan Mental</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -14,6 +14,14 @@
       margin-right: auto;
       background-color: #eaf4fc; /* soft sky blue */
       color: #123456; /* calm navy text */
+    }
+    .italic-nice {
+      font-style: italic;
+      font-family: 'Georgia', serif;
+      font-size: 0.9em;
+      color: #444;
+      line-height: 1.5;
+      margin-bottom: 1em;
     }
 
     .form-container {
@@ -30,6 +38,7 @@
       border-radius: 8px;
       color: #0b3d91;
       margin-top: 1.5em;
+      text-align: center;
     }
 
     label {
@@ -90,7 +99,7 @@
   </style>
 </head>
 <body>
-  <h2>Borang Saringan GAD-7 & PHQ-9</h2>
+  <h2>Saringan GAD-7 & PHQ-9</h2>
 
   <div class="form-container">
     <form id="mentalHealthForm">
@@ -103,10 +112,12 @@
         <input type="text" id="nric" required />
       </label>
 
-      <h3>GAD-7: Skala Gangguan Kebimbangan Umum</h3>
+      <h3>GAD-7: Saringan Gangguan Keresahan Menyeluruh</h3>
+      <p class="italic-nice">Sepanjang 2 minggu yang lalu, berapa kerapkah anda diganggu oleh mana-mana masalah berikut?</p>
       <div id="gad7-questions"></div>
 
-      <h3>PHQ-9: Soal Selidik Kesihatan Pesakit</h3>
+      <h3>PHQ-9: Penilaian Kesihatan Pesakit</h3>
+      <p class="italic-nice">Sepanjang 2 minggu yang lalu, berapa kerapkah anda diganggu oleh mana-mana masalah berikut?</p>
       <div id="phq9-questions"></div>
 
       <button type="button" onclick="copySummary()">Papar ringkasan</button>
@@ -122,25 +133,25 @@
 
   <script>
     const gad7Questions = [
-      "Berasa gugup, cemas atau 'berdebar-debar'?",
-      "Tidak dapat berhenti atau mengawal rasa risau?",
-      "Risau terlalu banyak mengenai pelbagai perkara?",
-      "Kesukaran untuk berehat?",
-      "Berasa gelisah sehingga sukar untuk duduk diam?",
-      "Mudah rasa terganggu atau cepat marah?",
-      "Berasa seolah-olah sesuatu yang buruk akan berlaku?",
+      "Berasa resah, gelisah atau tegang?",
+      "Tidak dapat menghentikan atau mengawal kebimbangan",
+      "Terlalu bimbang mengenai pelbagai perkara yang berlainan.",
+      "Mempunyai masalah untuk tenang",
+      "Terlalu resah sehingga susah untuk berdiam diri",
+      "Mudah menjadi rimas dan menjengkelkan",
+      "Berasa takut bahawa sesuatu yang buruk akan terjadi",
     ];
 
     const phq9Questions = [
-      "Kurang minat atau keseronokan dalam melakukan sesuatu?",
-      "Berasa murung, sedih, atau putus harapan?",
-      "Kesukaran untuk tidur atau tidur berlebihan?",
-      "Berasa letih atau kurang tenaga?",
-      "Selera makan yang kurang atau berlebihan?",
-      "Merasa diri gagal atau kecewa terhadap diri sendiri?",
-      "Kesukaran untuk menumpukan perhatian?",
-      "Bergerak atau bercakap lebih perlahan daripada biasa atau terlalu gelisah?",
-      "Terfikir lebih baik mati atau mencederakan diri?",
+      "Kurang berminat atau keseronokan dalam melakukan sesuatu perkara?",
+      "Rasa sedih, tidak gembira, atau putus asa?",
+      "Masalah untuk tidur atau tidur nyenyak atau tidur berlebihan?",
+      "Rasa letih atau mempunyai sedikit tenaga?",
+      "Kurang selera atau makan berlebihan?",
+      "Rasa buruk mengenai diri anda - atau anda seorang yang gagal atau anda telah menyebabkan diri anda atau keluarga anda kecewa?",
+      "Masalah untuk menumpukan perhatian ke atas sesuatu perkara seperti membaca surat khabar atau menonton televisyen?",
+      "Bergerak atau bercakap terlalu perlahan sehingga orang lain perasan? Atau sebaliknya - menjadi sangat resah atau gelisah sehinggakan anda telah bergerak banyak daripada biasa?",
+      "Memikirkan adalah lebih baik saja jika anda mati atau mencederakan diri sendiri dalam beberapa cara?",
     ];
 
     const responses = [
@@ -170,10 +181,10 @@
     generateQuestions("phq9-questions", phq9Questions, "phq");
 
     function interpretGAD(score) {
-      if (score <= 4) return "Tiada atau ringan";
-      if (score <= 9) return "Kebimbangan sederhana";
-      if (score <= 14) return "Kebimbangan sederhana berat";
-      return "Kebimbangan berat";
+      if (score <= 4) return "Normal or Minimal Anxiety";
+      if (score <= 9) return "Mild Anxiety";
+      if (score <= 14) return "Moderate Anxiety";
+      return "Severe Anxiety";
     }
 
     function interpretPHQ(score) {
@@ -220,7 +231,7 @@ NRIC: ${nric}
 GAD-7 Skor: ${gadScore} - ${gadLevel}
 PHQ-9 Skor: ${phqScore} - ${phqLevel}
 
-Cadangan:
+Recommendation:
 ${rec}
       `.trim();
 
