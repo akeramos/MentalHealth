@@ -128,6 +128,11 @@
         placeholder="Ringkasan akan dipaparkan di sini..."
         readonly
       ></textarea>
+      <!-- Add this inside your form, next to the existing button -->
+      <button type="button" onclick="clearAllFields()"  
+              style="background-color: grey; margin-top: 5px;">
+            Clear All Fields
+      </button>
     </form>
   </div>
 
@@ -282,6 +287,26 @@ Recommendation: ${phqRec}
 
       document.getElementById("summaryBox").value = summary;
     });
+    
+    function clearAllFields() {
+  // Clear text inputs
+  document.getElementById("nama").value = "";
+  document.getElementById("nric").value = "";
+
+  // Clear GAD-7 selects
+  for (let i = 0; i < gad7Questions.length; i++) {
+    document.getElementById(`gad${i}`).selectedIndex = 0;
+  }
+
+  // Clear PHQ-9 selects
+  for (let i = 0; i < phq9Questions.length; i++) {
+    document.getElementById(`phq${i}`).selectedIndex = 0;
+  }
+
+  // Clear summary textarea
+  document.getElementById("summaryBox").value = "";
+  }
+    
   </script>
 </body>
 </html>
