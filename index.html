@@ -108,7 +108,7 @@
         <input type="text" id="nama" required />
       </label>
       <label>
-        No. NRIC:
+        NRIC/Passport:
         <input type="text" id="nric" required />
       </label>
 
@@ -124,7 +124,7 @@
 
       <textarea
         id="summaryBox"
-        rows="8"
+        rows="12"
         placeholder="Ringkasan akan dipaparkan di sini..."
         readonly
       ></textarea>
@@ -180,26 +180,65 @@
     generateQuestions("gad7-questions", gad7Questions, "gad");
     generateQuestions("phq9-questions", phq9Questions, "phq");
 
-    function interpretGAD(score) {
-      if (score <= 4) return "Normal or Minimal Anxiety";
-      if (score <= 9) return "Mild Anxiety";
-      if (score <= 14) return "Moderate Anxiety";
-      return "Severe Anxiety";
-    }
-
     function interpretPHQ(score) {
-      if (score <= 4) return "Tiada atau ringan";
-      if (score <= 9) return "Kemurungan ringan";
-      if (score <= 14) return "Kemurungan sederhana";
-      if (score <= 19) return "Kemurungan sederhana berat";
-      return "Kemurungan berat";
+      if (score >= 0 && score <= 4)
+        return "Minimal to no depression.";
+      if (score >= 5 && score <= 9)
+        return "Mild depression.";
+      if (score >= 10 && score <= 14)
+        return "Moderate depression.";
+      if (score >= 15 && score <= 19)
+        return "Moderately severe depression.";
+      if (score >= 20 && score <= 27)
+        return "Severe depression.";
+      return "Invalid PHQ score.";
     }
 
-    function getRecommendation(gad, phq) {
-      if (gad >= 10 || phq >= 10) {
-        return "Pertimbangkan rujukan kepada profesional kesihatan mental.";
+    function interpretGAD(score) {
+      if (score >= 0 && score <= 4)
+        return "Minimal Anxiety.";
+      if (score >= 5 && score <= 9)
+        return "Mild Anxiety.";
+      if (score >= 10 && score <= 14)
+        return "Moderate Anxiety.";
+      if (score >= 15 && score <= 21)
+        return "Severe Anxiety.";
+      return "Invalid GAD score.";
+    }
+
+    function getRecommendation(gadScore, phqScore) {
+      let gadRec = "";
+      if (gadScore >= 0 && gadScore <= 4) {
+        gadRec = "None.";
+      } else if (gadScore >= 5 && gadScore <= 9) {
+        gadRec = "Provide general feedback, repeat GAD-7 at follow up, consider adjusting treatment plan if not improving in last 4 weeks.";
+      } else if (gadScore >= 10 && gadScore <= 14) {
+        gadRec = "Further evaluation recommended: For active treatment plans and consider adjustment of pharmacotherapy.";
+      } else if (gadScore >= 15 && gadScore <= 21) {
+        gadRec = "Suggest to adjust treatment plan. Evaluate high risk and consider for referral to tertiary center.";
+      } else {
+        gadRec = "Invalid GAD score.";
       }
-      return "Teruskan pemantauan dan sokongan kendiri.";
+
+      let phqRec = "";
+      if (phqScore >= 0 && phqScore <= 4) {
+        phqRec = "None.";
+      } else if (phqScore >= 5 && phqScore <= 9) {
+        phqRec = "Watchful waiting, repeat PHQ-9 at follow-up.";
+      } else if (phqScore >= 10 && phqScore <= 14) {
+        phqRec = "Counselling, and review treatment option: if not improving in 4 weeks consider pharmacotherapy.";
+      } else if (phqScore >= 15 && phqScore <= 19) {
+        phqRec = "Active treatment with antidepressants, psychotherapy, or a combination is recommended.";
+      } else if (phqScore >= 20 && phqScore <= 27) {
+        phqRec = "Evaluate treatment plan. Focus on safety profile and pharmacotherapy. Consider referral to tertiary center.";
+      } else {
+        phqRec = "Invalid PHQ score.";
+      }
+
+      return {
+        gadRec,
+        phqRec
+      };
     }
 
     function copySummary() {
@@ -207,7 +246,7 @@
       const nric = document.getElementById("nric").value.trim();
 
       if (!nama || !nric) {
-        alert("Sila isi Nama Pesakit dan No. NRIC terlebih dahulu.");
+        alert("Please fill out this field for name and NRIC.");
         return;
       }
 
@@ -220,19 +259,21 @@
         phqScore += parseInt(document.getElementById(`phq${i}`).value);
       }
 
-      const gadLevel = interpretGAD(gadScore);
-      const phqLevel = interpretPHQ(phqScore);
-      const rec = getRecommendation(gadScore, phqScore);
+      const gadLabel = interpretGAD(gadScore);
+      const phqLabel = interpretPHQ(phqScore);
+      const { gadRec, phqRec } = getRecommendation(gadScore, phqScore);
 
       const summary = `
 Nama: ${nama}
 NRIC: ${nric}
 
-GAD-7 Skor: ${gadScore} - ${gadLevel}
-PHQ-9 Skor: ${phqScore} - ${phqLevel}
+GAD-7 Score: ${gadScore}
+Interpretation: ${gadLabel}
+Recommendation: ${gadRec}
 
-Recommendation:
-${rec}
+PHQ-9 Score: ${phqScore}
+Interpretation: ${phqLabel}
+Recommendation: ${phqRec}
       `.trim();
 
       document.getElementById("summaryBox").value = summary;
